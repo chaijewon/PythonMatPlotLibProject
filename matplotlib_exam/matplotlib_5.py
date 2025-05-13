@@ -102,6 +102,7 @@ print(df.head(3))
 # 데이터 분석
 # 특정 부분을 추출 => 분석
 # 1) 제조사별 리콜 현황
+"""
 df=df[df['recall_year']==2022]
 print(df.recall_year.min(),df.recall_year.max())
 df.groupby('makes').count()['model'].sort_values(ascending=False)
@@ -115,6 +116,59 @@ plt.figure(figsize=(20,10)) #margin-left=20 margin-top=10
 ax=sns.countplot(x='makes',data=df,palette="Set2",order=tmp.index)
 plt.xticks(rotation=270)
 plt.show()
+"""
+# 2) 차량 모델별 리콜 건수 현황
+"""
+  데이터 수집 = 어떤 데이터 
+  데이터 분석 = 어떤 부분 
+  데이터 시각화 
+  ----------------------
+  설계 (부분...) = 예측 
+  
+  sum , mean , count , max , min
+"""
+"""
+#tmp=pd.DataFrame(df.groupby('model').count()['start_year'].sort_values(ascending=False)).rename(columns={"start_year":"count"}).head(10)
+#print(tmp)
+tmp=pd.DataFrame(df.groupby('model').count()['makes'].sort_values(ascending=False))
+tmp=tmp.rename(columns={"makes":"count"}).iloc[:50]
+print(tmp)
+plt.figure(figsize=(20,10))
+ax=sns.countplot(x='model',data=df[df.model.isin(tmp.index)],palette="Set2",order=tmp.index)
+plt.xticks(rotation=270)
+plt.show()
+"""
+"""
+# 3) 월별 리콜 현황
+tmp=pd.DataFrame(df.groupby('recall_month').count()['start_year'].sort_values(ascending=False))
+tmp=tmp.rename(columns={"start_year":"count"})
+print(tmp)
+plt.figure(figsize=(10,5))
+ax=sns.countplot(x='recall_month',data=df,palette="Set1")
+#plt.xticks(rotation=270)
+plt.show()
+"""
+"""
+# 4) 생산연도별 리콜 => start_year => 차량별 model
+tmp=pd.DataFrame(df.groupby('start_year').count()['model'].sort_values(ascending=False))
+tmp=tmp.rename(columns={"model":"count"}).reset_index()
+print(tmp)
+plt.figure(figsize=(10,5))
+ax=sns.lineplot(data=tmp,x='start_year',y="count")
+#plt.xticks(rotation=270)
+plt.show()
+"""
+# 5) 가장 최근 4분기 (10,11,12)
+plt.figure(figsize=(10,5))
+ax=sns.countplot(x='makes',data=df[df.recall_month.isin([10,11,12])],palette="Set2")
+plt.xticks(rotation=270)
+plt.show()
+# 6) 7월 이후
+plt.figure(figsize=(10,5))
+ax=sns.countplot(x='makes',data=df[df.recall_month>=7],palette="Set2")
+plt.xticks(rotation=270)
+plt.show()
+# 7) 리콜 사유 => WordCloud => 제외하는 문자열 STOPWORD
 
 
 
