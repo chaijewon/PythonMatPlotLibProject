@@ -30,6 +30,22 @@ import os
 import sys
 import urllib.request
 import json
+from konlpy.tag import Okt
+from collections import Counter
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from wordcloud import  WordCloud
+"""
+  Python 문법 
+   변수 / 연산자 / 제어문 / 함수 / 집합데이터형(list,set,tuple,dict)
+  Numpy : 배열 / 연산처리 
+  Pandas 
+  Matplotlib / seaborn 
+  ---------------------
+  JSON / XML / BS4 (크롤링) => 셀레니움 
+  -----------------------------------
+"""
 client_id = "OtKU74j2Bx_QN_K5YPck"
 client_secret = "eyn6LY7L0j"
 fd=input("검색어 입력:")
@@ -49,8 +65,47 @@ else:
 
 json_data=json.loads(response_body)
 print(json_data)
+total_str=""
 for news in json_data['items']:
-    print(news['description'])
-
+     total_str+=news['description']
+"""
+=> 형태소 분석 : korean_text / 꼬꼬마 
+okt=Okt()
+noun=okt.nouns(total_str)
+print(noun)
+list=pd.DataFrame(noun)
+"""
+font_path="c:/pydata/NanumGothic.ttf"
+wc=WordCloud(max_font_size=200,
+             background_color="white",
+             width=800,height=800,
+             font_path=font_path)
+wc.generate(total_str)
+plt.figure(figsize=(10,8))
+plt.imshow(wc)
+plt.axis('off')
+plt.show()
+"""
+=> bar chart 
+count=Counter(noun)
+noun_list=count.most_common(100)
+#최빈값 : 횟수가 가장 많은 것
+# {1,3,6,6,6,7,7,10,10} => 6
+n=[]
+for v in noun_list:
+    if len(v[0])>1 and v[1]>9:
+      #print(v)
+      n.append(list(v))
+#print(n)
+column=["단어","횟수"]
+list=pd.DataFrame(n,columns=column)
+list_top=list.sort_values(by="횟수",ascending=False).head(10)
+print(list)
+plt.figure(figsize=(20,10))
+plt.rc('font',family="Malgun Gothic")
+plt.bar(list_top['단어'],list_top['횟수'])
+plt.title('오늘의 뉴스')
+plt.show()
+"""
 
 
